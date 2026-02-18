@@ -1,0 +1,188 @@
+// MedAssist AI - Database Schema
+
+generator client {
+  provider             = "prisma-client-py"
+  recursive_type_depth = 5
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User Management (Admin, Staff, Emergency Team)
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         UserRole
+  name         String
+  phone        String?
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+enum UserRole {
+  ADMIN
+  DOCTOR
+  RECEPTIONIST
+  EMERGENCY_STAFF
+}
+
+// Patient Information
+model Patient {
+  id               String         @id @default(uuid())
+  name             String
+  phone            String         @unique
+  email            String?
+  age              Int?
+  gender           Gender?
+  consentStatus    Boolean        @default(false) @map("consent_status")
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+  appointments     Appointment[]
+  conversations    Conversation[]
+  emergencyCases   EmergencyCase[]
+
+  @@map("patients")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  PREFER_NOT_TO_SAY
+}
+
+// Departments
+model Department {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  doctors     Doctor[]
+
+  @@map("departments")
+}
+
+// Doctor Information
+model Doctor {
+  id                    String        @id @default(uuid())
+  name                  String
+  departmentId          String        @map("department_id")
+  specialization        String?
+  consultationFee       Float?        @map("consultation_fee")
+  schedule              Json? // Stores weekly schedule
+  emergencyAvailability Boolean       @default(false) @map("emergency_availability")
+  isActive              Boolean       @default(true) @map("is_active")
+  createdAt             DateTime      @default(now()) @map("created_at")
+  updatedAt             DateTime      @updatedAt @map("updated_at")
+  department            Department    @relation(fields: [departmentId], references: [id])
+  appointments          Appointment[]
+
+  @@map("doctors")
+}
+
+// Appointments
+model Appointment {
+  id           String            @id @default(uuid())
+  patientId    String            @map("patient_id")
+  doctorId     String            @map("doctor_id")
+  dateTime     DateTime          @map("date_time")
+  duration     Int               @default(30) // minutes
+  status       AppointmentStatus @default(SCHEDULED)
+  notes        String?
+  createdAt    DateTime          @default(now()) @map("created_at")
+  updatedAt    DateTime          @updatedAt @map("updated_at")
+  patient      Patient           @relation(fields: [patientId], references: [id])
+  doctor       Doctor            @relation(fields: [doctorId], references: [id])
+
+  @@map("appointments")
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  RESCHEDULED
+  NO_SHOW
+}
+
+// Conversations & Chat History
+model Conversation {
+  id          String   @id @default(uuid())
+  patientId   String?  @map("patient_id")
+  sessionId   String   @unique @map("session_id")
+  message     String
+  aiResponse  String   @map("ai_response")
+  intent      String?
+  urgency     String?
+  timestamp   DateTime @default(now())
+  patient     Patient? @relation(fields: [patientId], references: [id])
+
+  @@map("conversations")
+}
+
+// Emergency Cases
+model EmergencyCase {
+  id             String           @id @default(uuid())
+  patientId      String?          @map("patient_id")
+  severity       EmergencySeverity
+  symptoms       String
+  location       String?
+  contactNumber  String           @map("contact_number")
+  dispatchStatus DispatchStatus   @default(PENDING) @map("dispatch_status")
+  notes          String?
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+  patient        Patient?         @relation(fields: [patientId], references: [id])
+
+  @@map("emergency_cases")
+}
+
+enum EmergencySeverity {
+  NON_URGENT
+  URGENT
+  CRITICAL
+}
+
+enum DispatchStatus {
+  PENDING
+  DISPATCHED
+  ARRIVED
+  COMPLETED
+  CANCELLED
+}
+
+// Knowledge Base (for RAG System)
+model KnowledgeBase {
+  id        String   @id @default(uuid())
+  title     String
+  content   String
+  category  String
+  embedding String? // Stored as JSON string of vector
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("knowledge_base")
+}
+
+// Audit Logs
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?  @map("user_id")
+  action    String
+  resource  String
+  details   Json?
+  ipAddress String?  @map("ip_address")
+  timestamp DateTime @default(now())
+
+  @@map("audit_logs")
+}
