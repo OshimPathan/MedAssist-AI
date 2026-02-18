@@ -57,6 +57,19 @@ A 24/7 AI-powered hospital assistant that handles patient triage, appointment bo
 - GDPR endpoints: consent management, data export (Art. 15), data erasure (Art. 17)
 - Complete audit trail logging
 
+### 👥 Multi-Role Dashboards (New)
+- **Doctor Portal** — View appointments, patient history, and analytics
+- **Staff/Reception** — Triage queue management, patient registration, emergency dispatch
+- **Patient Portal** — Book appointments, view medical history, check symptoms
+- **Admin Console** — System-wide analytics, user management, audit logs
+
+### 🧠 Advanced Medical Knowledge Base (RAG)
+- **CDC Public Health Data** — 50+ stats on depression, disability, arthritis
+- **Disease Prediction** — 41 disease profiles with symptom mapping
+- **PubMedQA** — 50 research Q&A pairs for complex medical queries
+- **Processed Heart & Diabetes Data** — 100+ patient profiles for risk analysis
+- **Context-Aware Chat** — RAG retrieves relevant medical facts to augment LLM responses
+
 ### 📱 Progressive Web App (PWA)
 - Installable on iOS, Android, and desktop
 - Service worker with network-first caching
@@ -151,6 +164,21 @@ npm run dev
 | ⚙️ Admin Dashboard | http://localhost:3000/admin |
 | 📊 Analytics | http://localhost:3000/analytics |
 | 📚 API Docs (Swagger) | http://localhost:8000/api/docs |
+
+### 5. Import Medical Data (Optional)
+To populate the Knowledge Base with real-world datasets (CDC, PubMedQA, etc.):
+
+```bash
+cd backend
+# CDC Public Health Data
+python -m app.database.import_cdc_data
+
+# Symptom-Disease Data
+python -m app.database.import_symptom_data
+
+# Advanced Datasets (PubMedQA, Heart, Diabetes)
+python -m app.database.import_advanced_data
+```
 
 ### Docker (Alternative)
 
@@ -367,15 +395,9 @@ Patient Message → Intent Classification
 
 ## 📈 Roadmap
 
-- [x] **Phase 1**: Foundation & Database Architecture
-- [x] **Phase 2**: Core Communication (WebSocket, Chat UI)
-- [x] **Phase 3**: AI & Intelligence (LLM, RAG, Intent Classification)
-- [x] **Phase 4**: Triage & Emergency System
-- [x] **Phase 5**: Appointment Engine (Slot Locking, Notifications)
-- [x] **Phase 6**: Admin Dashboard (5 tabs, Real-time)
-- [x] **Phase 7**: Security & GDPR Compliance
-- [x] **Phase 8**: Testing & Deployment (33 unit tests, Docker)
-- [x] **Phase 9**: Wow-Factor (Chart.js Analytics, PWA)
+- [x] **Phase 1-9**: Core System (FastAPI, React, Auth, Admin, Analytics)
+- [x] **Phase 12**: Multi-Role Dashboards (Doctor, Staff, Patient)
+- [x] **Phase 13**: Knowledge Base & Data Import (CDC, PubMedQA, Triage)
 
 ---
 
