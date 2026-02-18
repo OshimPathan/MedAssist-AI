@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     PORT: int = 8000
     
     # Database
-    DATABASE_URL: str = "postgresql://medassist:medassist_secure_pwd@localhost:5432/medassist_db"
+    DATABASE_URL: str = "mongodb://localhost:27017/medassist_db"
     
     # Redis
     REDIS_HOST: str = "localhost"

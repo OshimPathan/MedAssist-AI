@@ -1,4 +1,4 @@
-// MedAssist AI - Database Schema
+// MedAssist AI - Database Schema (MongoDB)
 
 generator client {
   provider             = "prisma-client-py"
@@ -6,13 +6,13 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 // User Management (Admin, Staff, Emergency Team)
 model User {
-  id           String   @id @default(uuid())
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
   email        String   @unique
   passwordHash String   @map("password_hash")
   role         UserRole
@@ -34,18 +34,18 @@ enum UserRole {
 
 // Patient Information
 model Patient {
-  id               String         @id @default(uuid())
-  name             String
-  phone            String         @unique
-  email            String?
-  age              Int?
-  gender           Gender?
-  consentStatus    Boolean        @default(false) @map("consent_status")
-  createdAt        DateTime       @default(now()) @map("created_at")
-  updatedAt        DateTime       @updatedAt @map("updated_at")
-  appointments     Appointment[]
-  conversations    Conversation[]
-  emergencyCases   EmergencyCase[]
+  id             String          @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  phone          String          @unique
+  email          String?
+  age            Int?
+  gender         Gender?
+  consentStatus  Boolean         @default(false) @map("consent_status")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+  appointments   Appointment[]
+  conversations  Conversation[]
+  emergencyCases EmergencyCase[]
 
   @@map("patients")
 }
@@ -59,7 +59,7 @@ enum Gender {
 
 // Departments
 model Department {
-  id          String   @id @default(uuid())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   name        String   @unique
   description String?
   isActive    Boolean  @default(true) @map("is_active")
@@ -72,9 +72,9 @@ model Department {
 
 // Doctor Information
 model Doctor {
-  id                    String        @id @default(uuid())
+  id                    String        @id @default(auto()) @map("_id") @db.ObjectId
   name                  String
-  departmentId          String        @map("department_id")
+  departmentId          String        @map("department_id") @db.ObjectId
   specialization        String?
   consultationFee       Float?        @map("consultation_fee")
   schedule              Json? // Stores weekly schedule
@@ -90,17 +90,17 @@ model Doctor {
 
 // Appointments
 model Appointment {
-  id           String            @id @default(uuid())
-  patientId    String            @map("patient_id")
-  doctorId     String            @map("doctor_id")
-  dateTime     DateTime          @map("date_time")
-  duration     Int               @default(30) // minutes
-  status       AppointmentStatus @default(SCHEDULED)
-  notes        String?
-  createdAt    DateTime          @default(now()) @map("created_at")
-  updatedAt    DateTime          @updatedAt @map("updated_at")
-  patient      Patient           @relation(fields: [patientId], references: [id])
-  doctor       Doctor            @relation(fields: [doctorId], references: [id])
+  id        String            @id @default(auto()) @map("_id") @db.ObjectId
+  patientId String            @map("patient_id") @db.ObjectId
+  doctorId  String            @map("doctor_id") @db.ObjectId
+  dateTime  DateTime          @map("date_time")
+  duration  Int               @default(30) // minutes
+  status    AppointmentStatus @default(SCHEDULED)
+  notes     String?
+  createdAt DateTime          @default(now()) @map("created_at")
+  updatedAt DateTime          @updatedAt @map("updated_at")
+  patient   Patient           @relation(fields: [patientId], references: [id])
+  doctor    Doctor            @relation(fields: [doctorId], references: [id])
 
   @@map("appointments")
 }
@@ -116,32 +116,32 @@ enum AppointmentStatus {
 
 // Conversations & Chat History
 model Conversation {
-  id          String   @id @default(uuid())
-  patientId   String?  @map("patient_id")
-  sessionId   String   @unique @map("session_id")
-  message     String
-  aiResponse  String   @map("ai_response")
-  intent      String?
-  urgency     String?
-  timestamp   DateTime @default(now())
-  patient     Patient? @relation(fields: [patientId], references: [id])
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  patientId String?  @map("patient_id") @db.ObjectId
+  sessionId String   @unique @map("session_id")
+  message   String
+  aiResponse String  @map("ai_response")
+  intent    String?
+  urgency   String?
+  timestamp DateTime @default(now())
+  patient   Patient? @relation(fields: [patientId], references: [id])
 
   @@map("conversations")
 }
 
 // Emergency Cases
 model EmergencyCase {
-  id             String           @id @default(uuid())
-  patientId      String?          @map("patient_id")
+  id             String            @id @default(auto()) @map("_id") @db.ObjectId
+  patientId      String?           @map("patient_id") @db.ObjectId
   severity       EmergencySeverity
   symptoms       String
   location       String?
-  contactNumber  String           @map("contact_number")
-  dispatchStatus DispatchStatus   @default(PENDING) @map("dispatch_status")
+  contactNumber  String            @map("contact_number")
+  dispatchStatus DispatchStatus    @default(PENDING) @map("dispatch_status")
   notes          String?
-  createdAt      DateTime         @default(now()) @map("created_at")
-  updatedAt      DateTime         @updatedAt @map("updated_at")
-  patient        Patient?         @relation(fields: [patientId], references: [id])
+  createdAt      DateTime          @default(now()) @map("created_at")
+  updatedAt      DateTime          @updatedAt @map("updated_at")
+  patient        Patient?          @relation(fields: [patientId], references: [id])
 
   @@map("emergency_cases")
 }
@@ -162,7 +162,7 @@ enum DispatchStatus {
 
 // Knowledge Base (for RAG System)
 model KnowledgeBase {
-  id        String   @id @default(uuid())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   title     String
   content   String
   category  String
@@ -176,7 +176,7 @@ model KnowledgeBase {
 
 // Audit Logs
 model AuditLog {
-  id        String   @id @default(uuid())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   userId    String?  @map("user_id")
   action    String
   resource  String

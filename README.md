@@ -8,7 +8,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.109-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![React](https://img.shields.io/badge/React-18.2-61DAFB?logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-3178C6?logo=typescript&logoColor=white)](https://typescriptlang.org)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)](https://postgresql.org)
+[![MongoDB](https://img.shields.io/badge/MongoDB-7-47A248?logo=mongodb&logoColor=white)](https://mongodb.com)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](https://docker.com)
 [![PWA](https://img.shields.io/badge/PWA-Installable-5A0FC8?logo=pwa&logoColor=white)](#-progressive-web-app)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
@@ -71,7 +71,7 @@ A 24/7 AI-powered hospital assistant that handles patient triage, appointment bo
 | Technology | Purpose |
 |-----------|---------|
 | **FastAPI** | Async REST API framework |
-| **Prisma** | Type-safe ORM for PostgreSQL |
+| **Prisma** | Type-safe ORM for MongoDB |
 | **FAISS** | Vector similarity search (RAG) |
 | **sentence-transformers** | Text embeddings (MiniLM-L6-v2) |
 | **Google Gemini** | Primary LLM (free tier) |
@@ -105,7 +105,7 @@ A 24/7 AI-powered hospital assistant that handles patient triage, appointment bo
 
 ### Prerequisites
 - Python 3.11+ & Node.js 18+
-- PostgreSQL 16 (or Docker)
+- MongoDB 7 (or Docker)
 - Google Gemini API key ([get free](https://aistudio.google.com/apikey))
 
 ### 1. Clone & Configure
@@ -118,7 +118,7 @@ cp .env.example .env
 
 Edit `.env` and set:
 ```env
-DATABASE_URL="postgresql://user:pass@localhost:5432/medassist"
+DATABASE_URL="mongodb://localhost:27017/medassist_db"
 SECRET_KEY="your-secret-key-here"
 GOOGLE_GEMINI_API_KEY="your-gemini-key"
 ```
@@ -179,7 +179,7 @@ docker-compose up -d
 │  └────┬────┘  └────┬─────┘  └────┬─────┘  └──────┬───────┘ │
 │       │            │             │                │         │
 │  ┌────┴────────────┴─────────────┴────────────────┴───────┐ │
-│  │              Prisma ORM + PostgreSQL                    │ │
+│  │              Prisma ORM + MongoDB                      │ │
 │  └────────────────────────────────────────────────────────┘ │
 │                                                              │
 │  ┌──────────────┐  ┌────────────┐  ┌──────────────────────┐ │

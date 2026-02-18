@@ -6,7 +6,7 @@ websockets==12.0
 
 # Database
 prisma==0.11.0
-psycopg2-binary==2.9.9
+pymongo==4.6.1
 redis==5.0.1
 
 # AI & ML

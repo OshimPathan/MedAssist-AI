@@ -1,20 +1,18 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database
-  postgres:
-    image: postgres:16-alpine
-    container_name: medassist-postgres
+  # MongoDB Database
+  mongodb:
+    image: mongo:7-jammy
+    container_name: medassist-mongodb
     environment:
-      POSTGRES_USER: medassist
-      POSTGRES_PASSWORD: medassist_secure_pwd
-      POSTGRES_DB: medassist_db
+      MONGO_INITDB_DATABASE: medassist_db
     ports:
-      - "5432:5432"
+      - "27017:27017"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - mongodb_data:/data/db
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U medassist" ]
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -40,17 +38,18 @@ services:
       dockerfile: Dockerfile
     container_name: medassist-backend
     environment:
-      DATABASE_URL: postgresql://medassist:medassist_secure_pwd@postgres:5432/medassist_db
+      DATABASE_URL: mongodb://mongodb:27017/medassist_db
       REDIS_HOST: redis
       REDIS_PORT: 6379
       SECRET_KEY: ${SECRET_KEY:-your-secret-key-change-in-production}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
+      GOOGLE_GEMINI_API_KEY: ${GOOGLE_GEMINI_API_KEY}
       ENVIRONMENT: ${ENVIRONMENT:-development}
       DEBUG: ${DEBUG:-true}
     ports:
       - "8000:8000"
     depends_on:
-      postgres:
+      mongodb:
         condition: service_healthy
       redis:
         condition: service_healthy
@@ -78,5 +77,5 @@ services:
     command: npm run dev -- --host 0.0.0.0 --port 3000
 
 volumes:
-  postgres_data:
+  mongodb_data:
   redis_data:

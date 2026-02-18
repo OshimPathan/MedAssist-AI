@@ -16,7 +16,7 @@ async def connect_db():
     """Connect to the database"""
     try:
         await db.connect()
-        logger.info("Successfully connected to PostgreSQL database")
+        logger.info("Successfully connected to MongoDB database")
     except Exception as e:
         logger.error(f"Failed to connect to database: {e}")
         raise
